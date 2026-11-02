@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dome",
+    "name": "ドームテント スタンダード",
+    "type": "ドームテント",
+    "capacityMin": 2,
+    "capacityMax": 4,
+    "priceWeekday": 12000,
+    "priceHoliday": 15000,
+    "features": ["bbq"],
+    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "image": "/images/plan-dome.webp",
+    "imageAlt": "ドームテントの外観",
+    "stock": 2
+  },
+  {
+    "id": "cottage",
+    "name": "森のコテージ（サウナ付き）",
+    "type": "コテージ",
+    "capacityMin": 2,
+    "capacityMax": 4,
+    "priceWeekday": 18000,
+    "priceHoliday": 22000,
+    "features": ["sauna", "breakfast"],
+    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "image": "/images/plan-cottage.webp",
+    "imageAlt": "サウナ付きコテージの外観",
+    "stock": 1
+  },
+  {
+    "id": "trailer",
+    "name": "トレーラーハウス（ペット可）",
+    "type": "トレーラー",
+    "capacityMin": 2,
+    "capacityMax": 6,
+    "priceWeekday": 10000,
+    "priceHoliday": 13000,
+    "features": ["pet", "bbq"],
+    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "image": "/images/plan-trailer.webp",
+    "imageAlt": "トレーラーハウスの外観",
+    "stock": 3
+  },
+  {
+    "id": "treehouse",
+    "name": "ツリーハウス",
+    "type": "ツリーハウス",
+    "capacityMin": 2,
+    "capacityMax": 2,
+    "priceWeekday": 15000,
+    "priceHoliday": 19000,
+    "features": ["breakfast"],
+    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "image": "/images/plan-treehouse.webp",
+    "imageAlt": "ツリーハウスの外観",
+    "stock": 0
+  }
+]
