@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { featureLabels, type Plan } from '@/types/plan'
-import { formatPrice } from '@/utils/format'
+import { formatCapacity, formatPrice } from '@/utils/format'
 
 const props = defineProps<{
   plan: Plan
@@ -13,9 +13,7 @@ const props = defineProps<{
 
 // 定員の表示：「2〜4名」、最小と最大が同じなら「2名」
 const capacityText = computed(() =>
-  props.plan.capacityMin === props.plan.capacityMax
-    ? `${props.plan.capacityMax}名`
-    : `${props.plan.capacityMin}〜${props.plan.capacityMax}名`,
+  formatCapacity(props.plan.capacityMin, props.plan.capacityMax),
 )
 
 // 合計金額（平日料金で計算。子どもは大人の半額）

@@ -1,4 +1,71 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed, reactive, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import CalendarPicker from '@/components/CalendarPicker.vue'
+import { useAvailability } from '@/composables/useAvailability'
+import { usePlans } from '@/composables/usePlans'
+import { addDays, formatDateJa, isValidDateKey, toDateKey } from '@/utils/date'
+import { formatCapacity } from '@/utils/format'
+import { clamp, toNumber } from '@/utils/query'
+
+const route = useRoute()
+const router = useRouter()
+const { plans, isLoading: isPlansLoading } = usePlans()
+const { availability, error: availabilityError } = useAvailability()
+
+const today = toDateKey(new Date())
+
+// ---- URLのクエリから、選んだプランと条件を受け取る ----
+const planId = typeof route.query.plan === 'string' ? route.query.plan : ''
+const queryCheckin = typeof route.query.checkin === 'string' ? route.query.checkin : ''
+
+const form = reactive({
+  // 正しい日付で、今日以降のときだけ使う
+  checkin: isValidDateKey(queryCheckin) && queryCheckin >= today ? queryCheckin : '',
+  nights: clamp(toNumber(route.query.nights, 1), 1, 3),
+  adults: clamp(toNumber(route.query.adults, 2), 1, 6),
+  children: clamp(toNumber(route.query.children, 0), 0, 3),
+})
+
+// 選んだプラン（見つからなければ undefined）
+const plan = computed(() => plans.value.find((item) => item.id === planId))
+
+// ---- 日程 ----
+// 宿泊する日の一覧（2泊なら2日分）
+const stayDates = computed(() =>
+  form.checkin ? Array.from({ length: form.nights }, (_, i) => addDays(form.checkin, i)) : [],
+)
+const checkoutDate = computed(() => (form.checkin ? addDays(form.checkin, form.nights) : ''))
+
+// ---- 入力チェック ----
+const errors = computed(() => {
+  const list: string[] = []
+  if (!plan.value) return list
+
+  if (form.adults + form.children > plan.value.capacityMax) {
+    list.push(`このプランの定員は${plan.value.capacityMax}名です。人数を見直してください。`)
+  }
+
+  const fullDates = availability.value?.plans[plan.value.id]?.full ?? []
+  if (stayDates.value.some((date) => fullDates.includes(date))) {
+    list.push('選んだ日程に満室の日が含まれています。別の日程をお選びください。')
+  }
+  return list
+})
+
+// ---- 条件が変わったら、URLのクエリにも反映する（更新しても残るように） ----
+watch(form, () => {
+  router.replace({
+    query: {
+      plan: planId,
+      checkin: form.checkin || undefined,
+      nights: String(form.nights),
+      adults: String(form.adults),
+      children: String(form.children),
+    },
+  })
+})
+</script>
 
 <template>
   <!-- ページタイトルと進み具合（ステップ） -->
@@ -14,24 +81,38 @@
     </div>
   </div>
 
-  <div class="reserve">
+  <p v-if="isPlansLoading" class="plans__message">プランを読み込んでいます…</p>
+  <div v-else-if="!plan" class="plans__message">
+    <p>プランが見つかりませんでした。</p>
+    <RouterLink :to="{ name: 'plans' }" class="button">プラン一覧へ戻る</RouterLink>
+  </div>
+
+  <div v-else class="reserve">
     <div class="reserve__main">
       <!-- 選んでいるプラン -->
       <div class="reserve-plan">
         <img
           class="reserve-plan__image"
-          src="/images/plan-dome.webp"
-          alt="ドームテントの外観"
+          :src="plan.image"
+          :alt="plan.imageAlt"
           width="800"
           height="600"
         />
         <div class="reserve-plan__body">
-          <p class="reserve-plan__name">ドームテント スタンダード</p>
+          <p class="reserve-plan__name">{{ plan.name }}</p>
           <ul class="tag-list">
-            <li class="tag">定員 2〜4名</li>
-            <li class="tag">ドームテント</li>
+            <li class="tag">定員 {{ formatCapacity(plan.capacityMin, plan.capacityMax) }}</li>
+            <li class="tag">{{ plan.type }}</li>
           </ul>
-          <RouterLink to="/plans" class="reserve-plan__change">プランを変更する</RouterLink>
+          <RouterLink
+            :to="{
+              name: 'plans',
+              query: { nights: form.nights, adults: form.adults, children: form.children },
+            }"
+            class="reserve-plan__change"
+          >
+            プランを変更する
+          </RouterLink>
         </div>
       </div>
 
@@ -40,342 +121,49 @@
         <section class="reserve-section" aria-labelledby="step1-title">
           <h2 id="step1-title" class="reserve-section__title">1. 日程・人数を選ぶ</h2>
 
-          <div class="calendar">
-            <div class="calendar__head">
-              <button type="button" class="calendar__nav" aria-label="前の月">＜</button>
-              <p class="calendar__month">2026年11月</p>
-              <button type="button" class="calendar__nav" aria-label="次の月">＞</button>
-            </div>
-            <table class="calendar__table">
-              <thead>
-                <tr>
-                  <th scope="col">日</th>
-                  <th scope="col">月</th>
-                  <th scope="col">火</th>
-                  <th scope="col">水</th>
-                  <th scope="col">木</th>
-                  <th scope="col">金</th>
-                  <th scope="col">土</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <button type="button" class="calendar__day" aria-label="11月1日（日） 空きあり">
-                      1<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day calendar__day--eve"
-                      aria-label="11月2日（月） 空きあり 休前日料金"
-                    >
-                      2<span class="calendar__mark" aria-hidden="true">○</span
-                      ><span class="calendar__eve" aria-hidden="true">休前日</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button type="button" class="calendar__day" aria-label="11月3日（火） 空きあり">
-                      3<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button type="button" class="calendar__day" aria-label="11月4日（水） 空きあり">
-                      4<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月5日（木） 残りわずか"
-                    >
-                      5<span class="calendar__mark" aria-hidden="true">△</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月6日（金） 満室"
-                      disabled
-                    >
-                      6<span class="calendar__mark" aria-hidden="true">×</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day calendar__day--eve"
-                      aria-label="11月7日（土） 満室"
-                      disabled
-                    >
-                      7<span class="calendar__mark" aria-hidden="true">×</span
-                      ><span class="calendar__eve" aria-hidden="true">休前日</span>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <button type="button" class="calendar__day" aria-label="11月8日（日） 空きあり">
-                      8<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button type="button" class="calendar__day" aria-label="11月9日（月） 空きあり">
-                      9<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月10日（火） 空きあり"
-                    >
-                      10<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月11日（水） 空きあり"
-                    >
-                      11<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月12日（木） 残りわずか"
-                    >
-                      12<span class="calendar__mark" aria-hidden="true">△</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月13日（金） 空きあり"
-                    >
-                      13<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day calendar__day--eve is-selected"
-                      aria-label="11月14日（土） 空きあり 休前日料金 チェックイン日"
-                      aria-pressed="true"
-                    >
-                      14<span class="calendar__mark" aria-hidden="true">○</span
-                      ><span class="calendar__eve" aria-hidden="true">休前日</span>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day is-checkout"
-                      aria-label="11月15日（日） 空きあり チェックアウト日"
-                    >
-                      15<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月16日（月） 空きあり"
-                    >
-                      16<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月17日（火） 空きあり"
-                    >
-                      17<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月18日（水） 空きあり"
-                    >
-                      18<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月19日（木） 空きあり"
-                    >
-                      19<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月20日（金） 空きあり"
-                    >
-                      20<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day calendar__day--eve"
-                      aria-label="11月21日（土） 残りわずか 休前日料金"
-                    >
-                      21<span class="calendar__mark" aria-hidden="true">△</span
-                      ><span class="calendar__eve" aria-hidden="true">休前日</span>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day calendar__day--eve"
-                      aria-label="11月22日（日） 満室"
-                      disabled
-                    >
-                      22<span class="calendar__mark" aria-hidden="true">×</span
-                      ><span class="calendar__eve" aria-hidden="true">休前日</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月23日（月） 空きあり"
-                    >
-                      23<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月24日（火） 空きあり"
-                    >
-                      24<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月25日（水） 空きあり"
-                    >
-                      25<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月26日（木） 空きあり"
-                    >
-                      26<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月27日（金） 空きあり"
-                    >
-                      27<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day calendar__day--eve"
-                      aria-label="11月28日（土） 満室"
-                      disabled
-                    >
-                      28<span class="calendar__mark" aria-hidden="true">×</span
-                      ><span class="calendar__eve" aria-hidden="true">休前日</span>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月29日（日） 空きあり"
-                    >
-                      29<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="calendar__day"
-                      aria-label="11月30日（月） 空きあり"
-                    >
-                      30<span class="calendar__mark" aria-hidden="true">○</span>
-                    </button>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-            <ul class="calendar__legend">
-              <li>○ 空きあり</li>
-              <li>△ 残りわずか</li>
-              <li>× 満室</li>
-              <li>「休前日」は休前日料金</li>
-            </ul>
-          </div>
+          <p v-if="availabilityError" class="form-errors" role="alert">{{ availabilityError }}</p>
 
-          <div class="reserve-section__fields reserve-section__fields--4">
-            <div class="form-field">
-              <label for="checkin">チェックイン</label>
-              <input type="date" id="checkin" name="checkin" value="2026-11-14" required />
-            </div>
+          <CalendarPicker
+            v-model="form.checkin"
+            :nights="form.nights"
+            :today="today"
+            :availability="availability?.plans[plan.id]"
+            :holidays="availability?.holidays ?? []"
+          />
+
+          <p class="reserve-section__selected" aria-live="polite">
+            <template v-if="form.checkin">
+              {{ formatDateJa(form.checkin) }} 〜 {{ formatDateJa(checkoutDate) }}（{{
+                form.nights
+              }}泊）
+            </template>
+            <template v-else>カレンダーから、チェックイン日を選んでください</template>
+          </p>
+
+          <div class="reserve-section__fields reserve-section__fields--3">
             <div class="form-field">
               <label for="nights">泊数</label>
-              <select id="nights" name="nights">
-                <option value="1">1泊</option>
-                <option value="2">2泊</option>
-                <option value="3">3泊</option>
+              <select id="nights" v-model.number="form.nights">
+                <option v-for="n in 3" :key="n" :value="n">{{ n }}泊</option>
               </select>
             </div>
             <div class="form-field">
               <label for="adults">大人</label>
-              <select id="adults" name="adults">
-                <option value="1">1名</option>
-                <option value="2" selected>2名</option>
-                <option value="3">3名</option>
-                <option value="4">4名</option>
+              <select id="adults" v-model.number="form.adults">
+                <option v-for="n in 6" :key="n" :value="n">{{ n }}名</option>
               </select>
             </div>
             <div class="form-field">
               <label for="children">子ども</label>
-              <select id="children" name="children">
-                <option value="0">0名</option>
-                <option value="1">1名</option>
-                <option value="2">2名</option>
+              <select id="children" v-model.number="form.children">
+                <option v-for="n in [0, 1, 2, 3]" :key="n" :value="n">{{ n }}名</option>
               </select>
             </div>
           </div>
+
+          <ul v-if="errors.length > 0" class="form-errors" role="alert">
+            <li v-for="message in errors" :key="message">{{ message }}</li>
+          </ul>
         </section>
 
         <!-- 2. オプション -->
@@ -516,7 +304,7 @@
   </div>
 
   <!-- スマホ用：合計と確認ボタンを画面下に固定 -->
-  <div class="summary-bar">
+  <div v-if="plan" class="summary-bar">
     <p class="summary-bar__total"><span>合計（税込）</span>[　]円</p>
     <button type="submit" form="reserve-form" class="button button--primary">確認する</button>
   </div>

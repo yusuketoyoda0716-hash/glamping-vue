@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import PlanRow from '@/components/PlanRow.vue'
 import { usePlans } from '@/composables/usePlans'
 import { featureLabels, type Feature } from '@/types/plan'
+import { toNumber } from '@/utils/query'
 
 type SortKey = 'recommend' | 'price' | 'capacity'
 
@@ -15,11 +16,6 @@ const { plans, isLoading, error } = usePlans()
 const featureKeys = Object.keys(featureLabels) as Feature[]
 
 // ---- URLのクエリ（?adults=2 など）を、使える値に変換する ----
-const toNumber = (value: unknown, fallback: number) => {
-  const number = Number(value)
-  return Number.isInteger(number) && number >= 0 ? number : fallback
-}
-
 const toFeatures = (value: unknown): Feature[] => {
   const list = Array.isArray(value) ? value : [value]
   return featureKeys.filter((key) => list.includes(key))
