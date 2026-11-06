@@ -36,8 +36,10 @@ const submitSearch = () => {
       height="900"
     />
     <div class="hero__content">
-      <h1 class="hero__title">[キャッチコピー]</h1>
-      <p class="hero__lead">[施設の紹介文。森の中で過ごす、1日数組限定のグランピング など]</p>
+      <h1 class="hero__title">森にとけこむ、ひと晩を。</h1>
+      <p class="hero__lead">
+        1日4組限定。木々に囲まれたテントやコテージで、焚き火と星空をゆっくり楽しむグランピング施設です。
+      </p>
 
       <form class="search-form" @submit.prevent="submitSearch">
         <p class="search-form__title">空室を検索</p>
@@ -76,8 +78,12 @@ const submitSearch = () => {
         loading="lazy"
       />
       <div class="about__body">
-        <h2 id="about-title" class="section__title">[施設名]について</h2>
-        <p>[コンセプトの説明文。どんな場所で、どんな過ごし方ができるのかを3〜4行で]</p>
+        <h2 id="about-title" class="section__title">FOREST GLAMPINGについて</h2>
+        <p>
+          標高800mの森の中に、ドームテントやコテージなど4つの客室を用意しています。<br />
+          テントや寝具、BBQの道具はすべてそろっているので、手ぶらで来ていただけます。<br />
+          昼は森を散歩し、夜は焚き火を囲んで、街では見られない星空をお楽しみください。
+        </p>
         <a href="#activity" class="button">過ごし方を見る</a>
       </div>
     </div>
@@ -103,7 +109,7 @@ const submitSearch = () => {
             />
             <h3 class="plan-card__name">ドームテント スタンダード</h3>
             <p class="plan-card__meta">定員 2〜4名／ドームテント</p>
-            <p class="plan-card__price">1泊 [　]円〜（1名）</p>
+            <p class="plan-card__price">1泊 12,000円〜（1名）</p>
             <RouterLink to="/reserve?plan=dome" class="button">詳しく見る</RouterLink>
           </article>
         </li>
@@ -119,7 +125,7 @@ const submitSearch = () => {
             />
             <h3 class="plan-card__name">森のコテージ（サウナ付き）</h3>
             <p class="plan-card__meta">定員 2〜4名／コテージ</p>
-            <p class="plan-card__price">1泊 [　]円〜（1名）</p>
+            <p class="plan-card__price">1泊 18,000円〜（1名）</p>
             <RouterLink to="/reserve?plan=cottage" class="button">詳しく見る</RouterLink>
           </article>
         </li>
@@ -135,7 +141,7 @@ const submitSearch = () => {
             />
             <h3 class="plan-card__name">トレーラーハウス（ペット可）</h3>
             <p class="plan-card__meta">定員 2〜6名／トレーラー</p>
-            <p class="plan-card__price">1泊 [　]円〜（1名）</p>
+            <p class="plan-card__price">1泊 10,000円〜（1名）</p>
             <RouterLink to="/reserve?plan=trailer" class="button">詳しく見る</RouterLink>
           </article>
         </li>
@@ -192,19 +198,11 @@ const submitSearch = () => {
     </div>
   </section>
 
-  <!-- よくある質問（JSなしでも開閉できる details 要素） -->
+  <!-- よくある質問（一度に1つだけ開く） -->
   <section id="faq" class="section section--gray faq" aria-labelledby="faq-title">
     <div class="section__inner">
       <h2 id="faq-title" class="section__title">よくある質問</h2>
-      <div class="faq-list">
-        <!-- よくある質問（一度に1つだけ開く） -->
-        <section id="faq" class="section section--gray faq" aria-labelledby="faq-title">
-          <div class="section__inner">
-            <h2 id="faq-title" class="section__title">よくある質問</h2>
-            <FaqList />
-          </div>
-        </section>
-      </div>
+      <FaqList />
     </div>
   </section>
 
@@ -213,18 +211,18 @@ const submitSearch = () => {
     <div class="section__inner">
       <h2 id="access-title" class="section__title">アクセス</h2>
       <div class="access__body">
-        <div class="access__map">地図（Googleマップを埋め込み）</div>
+        <div class="access__map">地図（架空の施設のため、表示していません）</div>
         <dl class="access__info">
           <dt>住所</dt>
-          <dd>[住所]</dd>
+          <dd>〇〇県〇〇郡〇〇町（架空の住所です）</dd>
           <dt>電話番号</dt>
-          <dd><a href="tel:[電話番号]">[電話番号]</a></dd>
+          <dd>000-0000-0000（架空の番号です）</dd>
           <dt>チェックイン</dt>
-          <dd>[15:00]〜[18:00]</dd>
+          <dd>15:00〜18:00</dd>
           <dt>チェックアウト</dt>
-          <dd>〜[10:00]</dd>
+          <dd>〜10:00</dd>
           <dt>交通</dt>
-          <dd>[最寄り駅から車で〇分／送迎あり]</dd>
+          <dd>最寄り駅から車で約20分（駅からの送迎あり・要予約）</dd>
         </dl>
       </div>
     </div>

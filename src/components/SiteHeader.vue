@@ -25,7 +25,7 @@ watch(
   <header class="site-header">
     <div class="site-header__inner">
       <RouterLink to="/" class="site-header__logo">
-        <img src="/images/logo.webp" alt="[施設名]" width="180" height="44" />
+        <img src="/images/logo.webp" alt="FOREST GLAMPING" width="180" height="44" />
       </RouterLink>
       <button
         type="button"

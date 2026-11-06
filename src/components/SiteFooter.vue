@@ -13,7 +13,11 @@
           <li><RouterLink to="/#access">アクセス</RouterLink></li>
         </ul>
       </nav>
-      <p class="site-footer__copyright"><small>&copy; [施設名]</small></p>
+      <p class="site-footer__copyright"><small>&copy; FOREST GLAMPING</small></p>
     </div>
+    <!-- 公開するので、架空のサイトであることを明記する -->
+    <p class="site-footer__note">
+      ※このサイトはポートフォリオ用に制作した架空の施設です。実際に予約することはできません。
+    </p>
   </footer>
 </template>

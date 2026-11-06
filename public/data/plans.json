@@ -8,7 +8,7 @@
     "priceWeekday": 12000,
     "priceHoliday": 15000,
     "features": ["bbq"],
-    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "description": "定番のドームテント。大きな窓から森を眺めながら、専用デッキでBBQを楽しめます。",
     "image": "/images/plan-dome.webp",
     "imageAlt": "ドームテントの外観",
     "stock": 2
@@ -22,7 +22,7 @@
     "priceWeekday": 18000,
     "priceHoliday": 22000,
     "features": ["sauna", "breakfast"],
-    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "description": "サウナ付きのコテージ。サウナで温まったあとは、森の空気の中で外気浴ができます。朝食付き。",
     "image": "/images/plan-cottage.webp",
     "imageAlt": "サウナ付きコテージの外観",
     "stock": 1
@@ -36,7 +36,7 @@
     "priceWeekday": 10000,
     "priceHoliday": 13000,
     "features": ["pet", "bbq"],
-    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "description": "ペットと泊まれるトレーラーハウス。最大6名まで泊まれるので、家族やグループにおすすめです。",
     "image": "/images/plan-trailer.webp",
     "imageAlt": "トレーラーハウスの外観",
     "stock": 3
@@ -50,7 +50,7 @@
     "priceWeekday": 15000,
     "priceHoliday": 19000,
     "features": ["breakfast"],
-    "description": "[プランの説明。設備や過ごし方を2行ほど]",
+    "description": "木の上に建てた2名用の小さな家。朝食付きで、森の景色をひとり占めできます。",
     "image": "/images/plan-treehouse.webp",
     "imageAlt": "ツリーハウスの外観",
     "stock": 0

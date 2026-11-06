@@ -1,0 +1,6 @@
+[
+  { "id": "bbq", "name": "BBQセット", "price": 3500, "unit": "person" },
+  { "id": "fire", "name": "焚き火セット", "price": 2000, "unit": "group" },
+  { "id": "breakfast", "name": "朝食", "price": 1800, "unit": "personNight" },
+  { "id": "late", "name": "レイトチェックアウト", "price": 3000, "unit": "group" }
+]

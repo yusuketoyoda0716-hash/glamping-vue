@@ -157,6 +157,17 @@ textarea {
   grid-column: 1 / -1;
 }
 
+/* 入力エラーのとき */
+.form-field [aria-invalid='true'] {
+  border-color: var(--color-error);
+  background: #fdf1f1;
+}
+
+.field-error {
+  font-size: 13px;
+  color: var(--color-error);
+}
+
 .required {
   margin-left: 8px;
   padding: 1px 6px;
@@ -299,6 +310,14 @@ textarea {
 .site-footer a {
   color: #ffffff;
   font-size: 14px;
+}
+
+.site-footer__note {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter) 24px;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 /* 下層ページのタイトル部分（プラン一覧・予約） */
@@ -740,6 +759,11 @@ textarea {
   color: #ffffff;
 }
 
+.steps__item.is-done {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 /* 2カラム：左が入力、右が料金の内訳 */
 .reserve {
   display: flex;
@@ -1007,6 +1031,16 @@ textarea {
   gap: 12px;
 }
 
+.summary__row--sub {
+  color: var(--color-text-sub);
+  font-size: 13px;
+}
+
+.summary__empty {
+  font-size: 14px;
+  color: var(--color-text-sub);
+}
+
 .summary__row--total {
   align-items: baseline;
   margin-top: 6px;
@@ -1077,11 +1111,65 @@ textarea {
   font-weight: 700;
 }
 
+.confirm-dialog__memo {
+  white-space: pre-wrap; /* 改行をそのまま表示する */
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .confirm-dialog__actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
+}
+
+/* 予約完了 */
+.complete {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px var(--gutter) 80px;
+  text-align: center;
+}
+
+.complete__title {
+  font-size: 24px;
+}
+
+.complete__text {
+  margin-top: 16px;
+  line-height: 1.8;
+}
+
+.complete__number {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  background: var(--color-bg-gray);
+  font-size: 14px;
+}
+
+.complete__number strong {
+  font-size: 20px;
+  letter-spacing: 0.05em;
+}
+
+.complete__list {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  text-align: left;
+}
+
+.complete__button {
+  margin-top: 32px;
 }
 
 /* =========================================================

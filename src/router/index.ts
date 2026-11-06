@@ -28,6 +28,12 @@ const router = createRouter({
       component: () => import('@/views/ReserveView.vue'),
       meta: { title: 'ご予約' },
     },
+    {
+      path: '/reserve/complete',
+      name: 'complete',
+      component: () => import('@/views/CompleteView.vue'),
+      meta: { title: 'ご予約完了' },
+    },
   ],
   // ページを移動したときのスクロール位置
   scrollBehavior(to, from, savedPosition) {
@@ -40,7 +46,9 @@ const router = createRouter({
 
 // ページを移動するたびに、タブに表示されるタイトルを変える
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} | [施設名]` : '[施設名] | 森の中のグランピング'
+  document.title = to.meta.title
+    ? `${to.meta.title} | FOREST GLAMPING`
+    : 'FOREST GLAMPING | 森の中のグランピング'
 })
 
 export default router
