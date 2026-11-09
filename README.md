@@ -41,6 +41,14 @@
     <td align="center">お客様情報の入力チェック</td>
     <td align="center">スマホ表示</td>
   </tr>
+  <tr>
+    <td><img src="docs/images/confirm.webp" alt="予約内容の確認ポップアップ" /></td>
+    <td><img src="docs/images/complete.webp" alt="予約完了ページ" /></td>
+  </tr>
+  <tr>
+    <td align="center">予約内容の確認ポップアップ</td>
+    <td align="center">予約完了ページ（予約番号の発行）</td>
+  </tr>
 </table>
 
 ---
