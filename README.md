@@ -5,7 +5,7 @@
 
 > ※ ポートフォリオ用に制作した架空の施設です。実際に予約することはできません。
 
-**公開URL：** （デプロイ後に記入）
+**公開URL：** https://glamping-vue.vercel.app
 
 ![トップページ](docs/images/home.webp)
 
